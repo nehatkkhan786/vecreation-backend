@@ -19,8 +19,8 @@ class ProductImages(models.Model):
     image = models.ImageField(upload_to=product_image_path)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # def __str__(self):
-    #     return self.name
+    def __str__(self):
+        return self.name
 
     
 
@@ -30,7 +30,7 @@ class Product(models.Model):
     productImages = models.ForeignKey(ProductImages, on_delete=models.SET_NULL, null=True )
     price = models.IntegerField()
     qty = models.IntegerField(default=0)
-    inActive = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -19,7 +19,7 @@ class getAllProducts(APIView):
 class getAllCategories(APIView):
     def get(self, request, *args, **kwargs):
         categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        serializer = CategorySerializer(categories,context={'request':request},  many=True)
         return Response(serializer.data, status = status.HTTP_200_OK)
 
 class MytokenPairViewSerializer(TokenObtainPairSerializer):

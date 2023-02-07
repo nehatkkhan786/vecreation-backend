@@ -13,7 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 class getAllProducts(APIView):
     def get(self, request, *args, **kwargs):
         products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
+        serializer = ProductSerializer(products, many=True , context={'request':request})
         return Response(serializer.data, status = status.HTTP_200_OK )
 
 class getAllCategories(APIView):

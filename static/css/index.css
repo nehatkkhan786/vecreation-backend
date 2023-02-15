@@ -11,6 +11,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 
 
 }
@@ -39,10 +40,14 @@ body{
     justify-content: center;
     margin-top: 10px;
     gap: 20px;
+    transition-duration: 3s;
 }
 
 .icons{
     height: 45px;
     width: 45px;
     cursor: pointer;
+}
+.icon-wrapper :hover{
+    transform: rotate(20deg);
 }

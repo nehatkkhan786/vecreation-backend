@@ -1,5 +1,6 @@
+from dataclasses import fields
 from rest_framework import serializers
-from shop.models import Category, Product, ProductImages
+from shop.models import Category, Product, ProductImages, OrderItem, Shipping, Order
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import request
@@ -59,3 +60,42 @@ class UserSerializerWithToken(UserSerializer):
     def get_access_token(self, user):
         token = RefreshToken.for_user(user)
         return str(token.access_token)
+
+
+class OrderItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
+
+class ShippingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shipping
+        fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    orderItems = serializers.SerializerMethodField(read_only=True)
+    shiping = serializers.SerializerMethodField(read_only=True)
+    user = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+    def get_orderItems(self, obj):
+        items = obj.orderitem_set.all()
+        serializers = OrderItemsSerializer(items, many=True)
+        return serializers.data
+    
+    def get_shiping(self, obj):
+        try:
+            address = ShippingSerializer(obj.shiping, many=False).data
+        except:
+            address = False    
+        return address
+    
+    def get_user(self, obj):
+        user = obj.user
+        serializer = UserSerializer(user, many=False)
+        return serializer.data
+

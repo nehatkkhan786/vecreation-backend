@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import getAllProducts, getAllCategories, MyTokenObtainPairView, registerUser
+from .views import getAllProducts, getAllCategories, MyTokenObtainPairView, registerUser, CreateOrder
 
 urlpatterns = [
     path('products/', getAllProducts.as_view()),
     path('categories/', getAllCategories.as_view()),
+    path('create_order/',CreateOrder.as_view()),
 
     # Authentication Urls
     path('accounts/login/', MyTokenObtainPairView.as_view()),

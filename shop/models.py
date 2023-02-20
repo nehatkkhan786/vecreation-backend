@@ -1,10 +1,17 @@
+from ast import mod
 from distutils.command.upload import upload
 from itertools import product
+from tkinter.tix import IMAGE
 from unicodedata import decimal
 from django.db import models
 import datetime
 from django.contrib.auth.models import User
-
+from .task import generate_image_hash
+import blurhash
+from PIL import Image
+import numpy
+import io
+import base64
 
 # Create your models here.
 
@@ -39,8 +46,20 @@ class Category(models.Model):
 class ProductImages(models.Model):
     name = models.CharField(max_length=200, blank=True, null=True)
     image = models.ImageField(upload_to=product_image_path)
+    imgHash = models.CharField(max_length=14, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+    def save(self, *args, **kwargs):
+        print('save method called')
+        if not self.imgHash: 
+            with self.image.open() as image_file:
+                hash = blurhash.encode(image_file, x_components=4, y_components=3)
+                self.imgHash = hash 
+                super().save(*args, **kwargs) 
+        else:
+            super().save(*args, **kwargs) 
+    
     def __str__(self):
         return self.name
 
@@ -60,6 +79,7 @@ class Product(models.Model):
 
 
 class Order(models.Model):
+    customId = models.CharField(max_length=255,default='WEB-00001', blank=True, null=True )
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     totalPrice = models.IntegerField()
     status = models.CharField(max_length=50, choices=ORDER_STATUS, blank=True, null=True)
@@ -67,8 +87,18 @@ class Order(models.Model):
     transactionId = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(default=datetime.datetime.now)
 
+
+    def save(self, *args, **kwargs):
+        last_order = Order.objects.all().order_by('id').last()
+        if last_order:
+            last_custom_id = int(last_order.customId.split('-')[-1])
+        else:
+            last_custom_id = 0
+        self.customId = 'WEB-{:05}'.format(last_custom_id + 1)
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.id
+        return self.customId
 
 class OrderItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
@@ -89,12 +119,14 @@ class OrderItem(models.Model):
 
 
 class Shipping(models.Model):
+    first_name = models.CharField(max_length=200, blank=True, null=True)
+    lastName = models.CharField(max_length=200, blank=True, null=True)
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     address = models.TextField()
     city =models.CharField(max_length=255)
     state = models.CharField(max_length=255)
     zipcode = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
+    country = models.CharField(max_length=100, default='India', blank=True, null=True)
     phone_number = models.CharField(max_length=15)
 
     def __str__(self):

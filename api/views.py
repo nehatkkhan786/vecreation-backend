@@ -105,4 +105,15 @@ class CreateOrder(APIView):
                 )
         serializer = OrderSerializer(order, many=False)
         return Response(serializer.data,  status=status.HTTP_200_OK)
+
+
+class GetAllOrdersByUser(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request,  *args, **kwargs):
+        user = request.user 
+        order = user.order_set.all()
+        serializer = OrderSerializer(order, many=True)
+        return Response(serializer.data, status = status.HTTP_200_OK)
+
        

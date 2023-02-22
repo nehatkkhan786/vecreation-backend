@@ -87,6 +87,9 @@ class Order(models.Model):
     transactionId = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(default=datetime.datetime.now)
 
+    class Meta:
+        ordering = ['-created_at']
+
 
     def save(self, *args, **kwargs):
         last_order = Order.objects.all().order_by('id').last()

@@ -117,3 +117,20 @@ class GetAllOrdersByUser(APIView):
         return Response(serializer.data, status = status.HTTP_200_OK)
 
        
+class UpdatePassword(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data
+
+        if data['password'] != data['confirmPassword']:
+            return Response({'message':'Password Does not Match'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        else:
+            user.set_password(data['password'])
+            user.save()
+            return Response({'message':'Password Successfully Updated'}, status=status.HTTP_200_OK)
+
+
+        

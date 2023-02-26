@@ -1,17 +1,27 @@
 from django.shortcuts import render
 from .serializers import ProductSerializer, CategorySerializer, UserSerializer, UserSerializerWithToken, OrderSerializer
 from shop.models import Product, Category, ProductImages, Order, Shipping, OrderItem
+from accounts.models import PasswordResetToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
+import random, string
+from rest_framework.exceptions import ValidationError
+from django.template.loader import render_to_string
+
+
+
 
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 
 # Create your views here.
 
@@ -133,4 +143,49 @@ class UpdatePassword(APIView):
             return Response({'message':'Password Successfully Updated'}, status=status.HTTP_200_OK)
 
 
+
+class ForgotPasswordView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data 
+        email = data['email']
+        try:
+            user = User.objects.get(email=email)
+        except:
+           raise ValidationError('User does not exist')
+        token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _i in range(12))
+        PasswordResetToken.objects.create(
+            email=email,
+            token = token
+        )
+
+        current_site = get_current_site(request)
+        password_reset_url = f'https://{current_site.domain}/api/change_forgot_password/{token}'
+        message = render_to_string('password_reset_email.html',{'email':email, 'token':token, 'user':user, 'password_reset_url':password_reset_url} )
+
+        send_mail(
+            subject="Password Reset Link",
+            message='Password Reset Link',
+            html_message=message,
+            recipient_list=[email],
+            from_email= 'vecreation50@gmail.com',
+        )
+
+        return Response({'message':'Reset Password Link Successfully Send.'}, status = status.HTTP_200_OK)
+
+class ChangeForgotPassword(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        if data['password'] != data['confirmPassword']:
+            raise ValidationError('Password doest not matched')
+        reset_token = PasswordResetToken.objects.filter(token=data['token']).first()
+        if not reset_token:
+            raise  ValidationError('Invalid Link')
+        user = User.objects.filter(email=reset_token.email).first()
+        if not user:
+            raise  ValidationError('No User Found')
         
+        user.set_password(data['password'])
+        user.save()
+        reset_token.delete()
+        return Response({'message':'Password Successfully Changed'}, status = status.HTTP_200_OK)
+

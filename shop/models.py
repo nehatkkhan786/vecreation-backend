@@ -49,15 +49,15 @@ class ProductImages(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-    def save(self, *args, **kwargs):
-        print('save method called')
-        if not self.imgHash: 
-            with self.image.open() as image_file:
-                hash = blurhash.encode(image_file, x_components=4, y_components=3)
-                self.imgHash = hash 
-                super().save(*args, **kwargs) 
-        else:
-            super().save(*args, **kwargs) 
+    # def save(self, *args, **kwargs):
+    #     print('save method called')
+    #     if not self.imgHash: 
+    #         with self.image.open() as image_file:
+    #             hash = blurhash.encode(image_file, x_components=4, y_components=3)
+    #             self.imgHash = hash 
+    #             super().save(*args, **kwargs) 
+    #     else:
+    #         super().save(*args, **kwargs) 
     
     def __str__(self):
         return self.name

@@ -91,12 +91,13 @@ class Order(models.Model):
 
 
     def save(self, *args, **kwargs):
-        last_order = Order.objects.all().order_by('id').last()
-        if last_order:
-            last_custom_id = int(last_order.customId.split('-')[-1])
-        else:
-            last_custom_id = 0
-        self.customId = 'WEB-{:05}'.format(last_custom_id + 1)
+        if not self.pk:
+            last_order = Order.objects.all().order_by('id').last()
+            if last_order:
+                last_custom_id = int(last_order.customId.split('-')[-1])
+            else:
+                last_custom_id = 0
+            self.customId = 'WEB-{:05}'.format(last_custom_id + 1)
         super().save(*args, **kwargs)
 
     def __str__(self):

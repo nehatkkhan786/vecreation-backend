@@ -98,6 +98,14 @@ class Order(models.Model):
             else:
                 last_custom_id = 0
             self.customId = 'WEB-{:05}'.format(last_custom_id + 1)
+        
+        # Need to Be Done
+        if not self.status:
+            print('New Order Has Been Placed')
+        else:
+            print(self.status[0])
+        # End Need to be done
+
         super().save(*args, **kwargs)
 
     def __str__(self):

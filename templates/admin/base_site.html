@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+ 
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+ 
+{% block branding %}
+<h1 id="site-name" style="font-family: cursive;" ><a href="{% url 'admin:index' %}">Vecreation</a></h1>
+{% endblock %}
+
+{% block extrahead %}
+    <style>
+        body{
+            font-family:'Ubuntu', sans-serif;
+            background-color:#000000;
+            color:inherit;
+        }
+
+        #header{
+            background-color: #000000;
+        }
+    </style>    
+{% endblock extrahead %}
+    
+ 
+{% block nav-global %}{% endblock %}

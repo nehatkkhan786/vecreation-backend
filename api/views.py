@@ -113,6 +113,17 @@ class CreateOrder(APIView):
                     qty = i['qty'],
                     price = product.price,        
                 )
+
+        orderUrl = f'https://vecreation.in/order_detail/{order.id}'
+        message = render_to_string('Order_Confirm.html',{'name':user.first_name, 'orderId':order.customId, 'orderUrl':orderUrl})
+        send_mail(
+            subject="Order Confirmation Email",
+            message='Order Confirmation Email',
+            html_message=message,
+            recipient_list=[user.email],
+            from_email= 'info@vecreation.in',
+        )
+            
         serializer = OrderSerializer(order, many=False)
         return Response(serializer.data,  status=status.HTTP_200_OK)
 

@@ -159,7 +159,7 @@ class ForgotPasswordView(APIView):
         )
 
         current_site = get_current_site(request)
-        password_reset_url = f'https://{current_site.domain}/api/change_forgot_password/{token}'
+        password_reset_url = f'https://vecreation.in/change_forgot_password/{token}'
         message = render_to_string('password_reset_email.html',{'email':email, 'token':token, 'user':user, 'password_reset_url':password_reset_url} )
 
         send_mail(
@@ -167,8 +167,9 @@ class ForgotPasswordView(APIView):
             message='Password Reset Link',
             html_message=message,
             recipient_list=[email],
-            from_email= 'vecreation50@gmail.com',
+            from_email= 'info@vecreation.in',
         )
+        print('email send')
 
         return Response({'message':'Reset Password Link Successfully Send.'}, status = status.HTTP_200_OK)
 

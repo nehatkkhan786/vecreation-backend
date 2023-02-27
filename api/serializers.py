@@ -12,12 +12,12 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        request = self.context.get('request')
-        if request:
-            representation['icon_url'] = request.build_absolute_uri(instance.icon.url)
-        return representation
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     request = self.context.get('request')
+    #     if request:
+    #         representation['icon_url'] = request.build_absolute_uri(instance.icon.url)
+    #     return representation
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):

@@ -36,7 +36,6 @@ def product_image_path(instance, filename):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    icon= models.ImageField(upload_to='CategoryIcons/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

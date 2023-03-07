@@ -142,6 +142,47 @@ class Shipping(models.Model):
 
     def __str__(self):
         return str(self.order.id)
+
+
+
+SUPPORT_STATUS = (
+    ('OPEN', 'OPEN'),
+    ('IN_PROGRESS', 'IN_PROGRESS'),
+    ('HOLD', 'HOLD'),
+    ('PENDING', 'PENDING'),
+    ('RESOLVED', 'RESOLVED'),
+    ('CLOSED', 'CLOSED'),
+)
+class Contact(models.Model):
+    supportId = models.CharField(max_length=200, default='VEC-00001', blank=True, null=True)
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone = models.CharField(max_length=12)
+    message = models.TextField()
+    status = models.CharField(max_length=100, choices= SUPPORT_STATUS, default='OPEN',  blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            last_contact = Contact.objects.all().order_by('id').last()
+            if last_contact:
+                last_custom_supportId = int(last_contact.supportId.split('-')[-1])
+            else:
+                last_custom_supportId = 0
+            self.supportId = 'VEC-{:05}'.format(last_custom_supportId + 1)
+        
+        # Need to Be Done
+        # if not self.status:
+        #     print('New Order Has Been Placed')
+        # else:
+        #     print(self.status[0])
+        # End Need to be done
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.name} {self.email}'
         
 
 

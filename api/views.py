@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .serializers import ProductSerializer, CategorySerializer, UserSerializer, UserSerializerWithToken, OrderSerializer
-from shop.models import Product, Category, ProductImages, Order, Shipping, OrderItem
+from shop.models import Product, Category, ProductImages, Order, Shipping, OrderItem, Contact
 from accounts.models import PasswordResetToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -200,4 +200,20 @@ class ChangeForgotPassword(APIView):
         user.save()
         reset_token.delete()
         return Response({'message':'Password Successfully Changed'}, status = status.HTTP_200_OK)
+
+class ContactView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        try:
+            # creata a contact model 
+            contact = Contact.objects.create(
+                name = data['name'],
+                email= data['email'],
+                phone= data['phone'],
+                message = data['message'],
+            )
+        except:
+            raise ValidationError('Something went Wrong!')
+        return Response({'message':'Contact Successfully Created'}, status = status.HTTP_200_OK)
+        
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, ProductImages, Product, Order, Shipping, OrderItem
+from .models import Category, ProductImages, Product, Order, Shipping, OrderItem, Contact
 
 # Register your models here.
 class OrderItemInline(admin.TabularInline):
@@ -17,6 +17,11 @@ class OrderAdmin(admin.ModelAdmin):
 
     inlines = [OrderItemInline, ShippingInline]
 
+class ContactAdmin(admin.ModelAdmin):
+    list_display= ('supportId', 'name', 'email', 'phone',)
+    search_fields = ('supportId', )
+    list_filter = ('created_at','status')
+    
 
 
 
@@ -26,3 +31,4 @@ admin.site.register(Product)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Shipping)
 admin.site.register(OrderItem)
+admin.site.register(Contact, ContactAdmin)

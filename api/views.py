@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 import random, string
 from rest_framework.exceptions import ValidationError
 from django.template.loader import render_to_string
-from .whatsappHelper import sendMessage
+
 
 
 

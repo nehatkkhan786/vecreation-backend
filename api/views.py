@@ -183,7 +183,7 @@ class ForgotPasswordView(APIView):
             recipient_list=[email],
             from_email= 'info@vecreation.in',
         )
-        print('email send')
+        
 
         return Response({'message':'Reset Password Link Successfully Send.'}, status = status.HTTP_200_OK)
 
